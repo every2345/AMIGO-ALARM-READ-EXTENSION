@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; width: 350px; margin: 0; padding: 10px; }
+    .tabs { display: flex; border-bottom: 2px solid #ccc; margin-bottom: 10px; }
+    .tab-btn { flex: 1; padding: 10px; border: none; background: #f1f1f1; cursor: pointer; font-weight: bold; }
+    .tab-btn.active { background: #fff; }
+    #btn-normal.active { border-bottom: 3px solid #28a745; color: #28a745; }
+    #btn-error.active { border-bottom: 3px solid #dc3545; color: #dc3545; }
+    .tab-content { display: none; max-height: 400px; overflow-y: auto; }
+    .tab-content.active { display: block; }
+    .device-item { padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
+    .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
+    .dot.green { background-color: #28a745; }
+    .dot.red { background-color: #dc3545; }
+    button#scan-btn { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; }
+    button#scan-btn:hover { background: #0056b3; }
+  </style>
+</head>
+<body>
+  <button id="scan-btn">Quét Dữ Liệu Trang</button>
+  
+  <div class="tabs">
+    <button id="btn-normal" class="tab-btn active">Bình thường (Xanh)</button>
+    <button id="btn-error" class="tab-btn">Sự cố (Đỏ)</button>
+  </div>
+
+  <div id="content-normal" class="tab-content active">Chưa có dữ liệu. Vui lòng quét.</div>
+  <div id="content-error" class="tab-content">Chưa có dữ liệu. Vui lòng quét.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
