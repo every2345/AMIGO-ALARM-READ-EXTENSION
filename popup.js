@@ -25,11 +25,10 @@ document.addEventListener('DOMContentLoaded', function() {
   btnNormal.addEventListener('click', () => switchTab(true));
   btnError.addEventListener('click', () => switchTab(false));
 
-  // GỌI DỮ LIỆU TỪ BACKGROUND.JS THAY VÌ TỰ QUÉT
   function fetchAndDisplayData() {
     chrome.runtime.sendMessage({ action: "get_latest_data" }, (response) => {
       if (response) {
-        displayData(response.normal, response.error);
+        displayData(response.offline, response.error);
       }
     });
   }
@@ -52,13 +51,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (devices.length === 0) {
       const emptyMsg = isError 
         ? '<p style="text-align:center; color:#666; margin-top: 20px;">Tuyệt vời! Không có thiết bị nào gặp sự cố.</p>'
-        : '<p style="text-align:center; color:#666; margin-top: 20px;">Không có thiết bị nào bình thường.</p>';
+        : '<p style="text-align:center; color:#666; margin-top: 20px;">Tuyệt vời! Không có thiết bị nào mất kết nối.</p>';
       container.innerHTML = emptyMsg;
       return;
     }
 
-    const headerColor = isError ? '#c62828' : '#2e7d32';
-    const dotColor = isError ? '#f44336' : '#4caf50';
+    const headerColor = isError ? '#c62828' : '#757575';
     container.innerHTML = `<p style="font-weight: bold; margin-bottom: 12px; color: ${headerColor};">Tổng số: ${devices.length} thiết bị</p>`;
 
     const grouped = groupBySite(devices);
@@ -80,6 +78,8 @@ document.addEventListener('DOMContentLoaded', function() {
       deviceListDiv.style.cssText = 'display: none; padding: 0 12px 6px 12px; background-color: #fff;';
 
       siteDevices.forEach(device => {
+        const dotColor = device.color || (isError ? 'rgb(216, 67, 21)' : 'rgb(117, 117, 117)');
+
         deviceListDiv.innerHTML += `
           <div class="device-item" style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
             <div class="dot" style="width: 10px; height: 10px; background-color: ${dotColor}; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle;"></div>
@@ -129,8 +129,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
 
-  function displayData(normal, error) {
-    renderGroupedList(contentNormal, normal, false);
+  function displayData(offline, error) {
+    renderGroupedList(contentNormal, offline, false);
     renderGroupedList(contentError, error, true);
 
     if (isFirstLoad) {
@@ -143,7 +143,6 @@ document.addEventListener('DOMContentLoaded', function() {
   scanBtn.innerText = "🟢 Đang chạy nền tự động...";
   scanBtn.style.backgroundColor = "#28a745";
 
-  // Hiển thị ngay lập tức và tự động làm mới trên Extension
   fetchAndDisplayData();
   setInterval(fetchAndDisplayData, 3000);
 });
