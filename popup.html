@@ -13,12 +13,28 @@
     .tab-content.active { display: block; }
     .device-item { padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
     .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
-    button#scan-btn { width: 100%; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; margin-bottom: 15px; }
-    button#scan-btn:hover { background: #0056b3; }
+    button#scan-btn { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: default; margin-bottom: 8px; font-weight: bold; }
+    
+    /* Thanh tổng số thiết bị hiện hữu */
+    #total-bar {
+      background-color: #f8f9fa;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 6px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: #333;
+    }
   </style>
 </head>
 <body>
-  <button id="scan-btn">Quét Dữ Liệu Trang</button>
+  <button id="scan-btn">🟢 Đang chạy nền tự động...</button>
+  
+  <div id="total-bar">
+    Tổng số thiết bị hiện hữu: <span id="total-count">0</span> thiết bị
+  </div>
   
   <div class="tabs">
     <button id="btn-normal" class="tab-btn active">Mất kết nối (Xám)</button>
