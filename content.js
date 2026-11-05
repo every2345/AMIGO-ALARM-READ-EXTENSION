@@ -1,5 +1,6 @@
 // --- content.js ---
 function scrapeDeviceData() {
+  let normal = [];
   let offline = [];
   let error = [];
   const deviceNodes = document.querySelectorAll('.site-sensor'); 
@@ -21,8 +22,8 @@ function scrapeDeviceData() {
       }
     }
 
-    let statusType = null; // 'offline' hoặc 'error' (Bỏ qua màu xanh lá)
-    let dotColor = "";
+    let statusType = 'normal'; 
+    let dotColor = '#4caf50';
 
     let colorElement = node.querySelector('.circle-sensor-svg-inner') || node.querySelector('.circle-sensor');
     if (colorElement) {
@@ -38,21 +39,22 @@ function scrapeDeviceData() {
       else if (strokeColor.includes('117, 117, 117') || strokeColor.includes('gray') || strokeColor.includes('128') || strokeColor.includes('150') || strokeColor.includes('160') || strokeColor.includes('180') || fillColor.includes('gray')) {
         dotColor = 'rgb(117, 117, 117)';
         statusType = 'offline';
+      } else {
+        statusType = 'normal'; // Xanh lá
       }
-      // Các thiết bị màu xanh lá sẽ không gán statusType nên bị bỏ qua
     }
 
-    if (statusType) {
-      let deviceInfo = { id: deviceId, name: deviceName, site: siteName, color: dotColor };
-      if (statusType === 'offline') {
-        offline.push(deviceInfo);
-      } else if (statusType === 'error') {
-        error.push(deviceInfo);
-      }
+    let deviceInfo = { id: deviceId, name: deviceName, site: siteName, color: dotColor };
+    if (statusType === 'normal') {
+      normal.push(deviceInfo);
+    } else if (statusType === 'offline') {
+      offline.push(deviceInfo);
+    } else if (statusType === 'error') {
+      error.push(deviceInfo);
     }
   });
 
-  return { offline, error };
+  return { normal, offline, error };
 }
 
 // Chủ động gửi dữ liệu về background.js
@@ -60,7 +62,7 @@ setInterval(() => {
   try {
     if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.id) {
       let data = scrapeDeviceData();
-      if (data.offline.length > 0 || data.error.length > 0) {
+      if (data.normal.length > 0 || data.offline.length > 0 || data.error.length > 0) {
         chrome.runtime.sendMessage({
           action: "report_data",
           data: data
