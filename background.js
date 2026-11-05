@@ -32,15 +32,20 @@ function aggregateData() {
   return { normal: combinedNormal, offline: combinedOffline, error: combinedError };
 }
 
-// Chạy ngầm gửi dữ liệu sang Python mỗi 3 giây
+// Gửi dữ liệu sang Python sử dụng IP động được cấu hình
 setInterval(() => {
   let finalData = aggregateData();
   
   if (finalData.offline.length > 0 || finalData.error.length > 0 || finalData.normal.length > 0) {
-    fetch('http://localhost:5000/update', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ offline: finalData.offline, error: finalData.error })
-    }).catch(err => console.log("Đợi Python bật lên:", err));
+    chrome.storage.local.get(['serverIp'], (result) => {
+      let ip = result.serverIp || '127.0.0.1'; // Mặc định là 127.0.0.1 để tránh mọi lỗi IP ảo
+      let targetUrl = `http://${ip}:5000/update`;
+
+      fetch(targetUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ offline: finalData.offline, error: finalData.error })
+      }).catch(err => console.log("Không kết nối được tới Python tại IP:", ip));
+    });
   }
 }, 3000);

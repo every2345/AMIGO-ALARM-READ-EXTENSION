@@ -9,29 +9,73 @@
     .tab-btn.active { background: #fff; }
     #btn-normal.active { border-bottom: 3px solid #757575; color: #757575; }
     #btn-error.active { border-bottom: 3px solid #dc3545; color: #dc3545; }
-    .tab-content { display: none; max-height: 400px; overflow-y: auto; }
+    .tab-content { display: none; max-height: 350px; overflow-y: auto; }
     .tab-content.active { display: block; }
     .device-item { padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center; }
     .dot { width: 12px; height: 12px; border-radius: 50%; margin-right: 10px; }
-    button#scan-btn { width: 100%; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: default; margin-bottom: 8px; font-weight: bold; }
+    button#scan-btn { width: 100%; padding: 8px; background: #28a745; color: white; border: none; border-radius: 4px; cursor: default; margin-bottom: 8px; font-weight: bold; font-size: 13px; }
     
     /* Thanh tổng số thiết bị hiện hữu */
     #total-bar {
       background-color: #f8f9fa;
       border: 1px solid #ddd;
       border-radius: 4px;
-      padding: 6px;
+      padding: 5px;
       text-align: center;
       font-weight: bold;
-      font-size: 13px;
-      margin-bottom: 10px;
+      font-size: 12px;
+      margin-bottom: 8px;
       color: #333;
     }
+
+    /* Thanh địa chỉ IP */
+    #ip-container {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #f1f3f5;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #ced4da;
+      margin-bottom: 10px;
+    }
+    #ip-container label {
+      font-weight: bold;
+      font-size: 12px;
+      color: #333;
+      white-space: nowrap;
+    }
+    #server-ip {
+      flex: 1;
+      padding: 4px 6px;
+      font-size: 12px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      background: #fff;
+    }
+    #save-ip-btn {
+      padding: 4px 10px;
+      font-size: 12px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    #save-ip-btn:hover { background: #0056b3; }
   </style>
 </head>
 <body>
   <button id="scan-btn">🟢 Đang chạy nền tự động...</button>
   
+  <!-- THANH ĐỊA CHỈ IP KẾT NỐI -->
+  <div id="ip-container">
+    <label for="server-ip">IP:</label>
+    <input type="text" id="server-ip" value="127.0.0.1" placeholder="127.0.0.1" />
+    <button id="save-ip-btn">Lưu IP</button>
+  </div>
+
   <div id="total-bar">
     Tổng số thiết bị hiện hữu: <span id="total-count">0</span> thiết bị
   </div>
@@ -41,8 +85,8 @@
     <button id="btn-error" class="tab-btn">Sự cố (Đỏ)</button>
   </div>
 
-  <div id="content-normal" class="tab-content active">Chưa có dữ liệu. Vui lòng quét.</div>
-  <div id="content-error" class="tab-content">Chưa có dữ liệu. Vui lòng quét.</div>
+  <div id="content-normal" class="tab-content active">Chưa có dữ liệu. Vui lòng đợi...</div>
+  <div id="content-error" class="tab-content">Chưa có dữ liệu. Vui lòng đợi...</div>
 
   <script src="popup.js"></script>
 </body>

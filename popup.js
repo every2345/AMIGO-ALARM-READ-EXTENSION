@@ -5,8 +5,30 @@ document.addEventListener('DOMContentLoaded', function() {
   const contentNormal = document.getElementById('content-normal');
   const contentError = document.getElementById('content-error');
   const totalCountSpan = document.getElementById('total-count');
+  const serverIpInput = document.getElementById('server-ip');
+  const saveIpBtn = document.getElementById('save-ip-btn');
 
   let isFirstLoad = true;
+
+  // Tải IP đã lưu trước đó (hoặc mặc định 127.0.0.1)
+  chrome.storage.local.get(['serverIp'], (result) => {
+    if (result.serverIp) {
+      serverIpInput.value = result.serverIp;
+    } else {
+      serverIpInput.value = "127.0.0.1";
+      chrome.storage.local.set({ serverIp: "127.0.0.1" });
+    }
+  });
+
+  // Lưu IP khi người dùng bấm nút
+  saveIpBtn.addEventListener('click', () => {
+    let newIp = serverIpInput.value.trim();
+    if (!newIp) newIp = "127.0.0.1";
+    
+    chrome.storage.local.set({ serverIp: newIp }, () => {
+      alert("Đã lưu địa chỉ IP: " + newIp);
+    });
+  });
 
   function switchTab(showNormal) {
     if (showNormal) {
@@ -32,7 +54,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const offlineList = response.offline || [];
         const errorList = response.error || [];
 
-        // Tính tổng số thiết bị hiện hữu (Normal + Offline + Error)
         const total = normalList.length + offlineList.length + errorList.length;
         if (totalCountSpan) {
           totalCountSpan.innerText = total;
@@ -60,14 +81,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (devices.length === 0) {
       const emptyMsg = isError 
-        ? '<p style="text-align:center; color:#666; margin-top: 20px;">Tuyệt vời! Không có thiết bị nào gặp sự cố.</p>'
-        : '<p style="text-align:center; color:#666; margin-top: 20px;">Tuyệt vời! Không có thiết bị nào mất kết nối.</p>';
+        ? '<p style="text-align:center; color:#666; margin-top: 15px; font-size: 13px;">Tuyệt vời! Không có thiết bị nào gặp sự cố.</p>'
+        : '<p style="text-align:center; color:#666; margin-top: 15px; font-size: 13px;">Tuyệt vời! Không có thiết bị nào mất kết nối.</p>';
       container.innerHTML = emptyMsg;
       return;
     }
 
     const headerColor = isError ? '#c62828' : '#757575';
-    container.innerHTML = `<p style="font-weight: bold; margin-bottom: 12px; color: ${headerColor};">Tổng số: ${devices.length} thiết bị</p>`;
+    container.innerHTML = `<p style="font-weight: bold; margin-bottom: 8px; color: ${headerColor}; font-size: 12px;">Tổng số: ${devices.length} thiết bị</p>`;
 
     const grouped = groupBySite(devices);
 
@@ -75,27 +96,27 @@ document.addEventListener('DOMContentLoaded', function() {
       const siteDevices = grouped[siteName];
       const siteGroup = document.createElement('div');
       siteGroup.className = 'site-group';
-      siteGroup.style.cssText = 'border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 8px; overflow: hidden;';
+      siteGroup.style.cssText = 'border: 1px solid #e0e0e0; border-radius: 6px; margin-bottom: 6px; overflow: hidden;';
 
       const siteHeader = document.createElement('div');
       siteHeader.className = 'site-header';
       siteHeader.dataset.site = siteName;
-      siteHeader.style.cssText = `background-color: #f8f9fa; padding: 10px 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 13px; color: #333; user-select: none; border-bottom: 1px solid transparent;`;
-      siteHeader.innerHTML = `<span>📍 ${siteName} <span style="font-weight: normal; font-size: 12px; color: #666;">(${siteDevices.length})</span></span><span class="arrow-icon" style="transition: transform 0.2s ease; font-size: 10px; color: #777;">▼</span>`;
+      siteHeader.style.cssText = `background-color: #f8f9fa; padding: 8px 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-weight: bold; font-size: 12px; color: #333; user-select: none; border-bottom: 1px solid transparent;`;
+      siteHeader.innerHTML = `<span>📍 ${siteName} <span style="font-weight: normal; font-size: 11px; color: #666;">(${siteDevices.length})</span></span><span class="arrow-icon" style="transition: transform 0.2s ease; font-size: 10px; color: #777;">▼</span>`;
 
       const deviceListDiv = document.createElement('div');
       deviceListDiv.className = 'site-device-list';
-      deviceListDiv.style.cssText = 'display: none; padding: 0 12px 6px 12px; background-color: #fff;';
+      deviceListDiv.style.cssText = 'display: none; padding: 0 10px 4px 10px; background-color: #fff;';
 
       siteDevices.forEach(device => {
         const dotColor = device.color || (isError ? 'rgb(216, 67, 21)' : 'rgb(117, 117, 117)');
 
         deviceListDiv.innerHTML += `
-          <div class="device-item" style="padding: 8px 0; border-bottom: 1px solid #f0f0f0;">
+          <div class="device-item" style="padding: 6px 0; border-bottom: 1px solid #f0f0f0;">
             <div class="dot" style="width: 10px; height: 10px; background-color: ${dotColor}; border-radius: 50%; display: inline-block; margin-right: 8px; vertical-align: middle;"></div>
             <div style="display: inline-block; vertical-align: middle;">
-              <span style="font-weight: 500; font-size: 13px;">${device.name}</span><br>
-              <span style="font-size: 0.75em; color: #888;">ID: ${device.id}</span>
+              <span style="font-weight: 500; font-size: 12px;">${device.name}</span><br>
+              <span style="font-size: 0.7em; color: #888;">ID: ${device.id}</span>
             </div>
           </div>`;
       });
