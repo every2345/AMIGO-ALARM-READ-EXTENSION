@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
   const btnError = document.getElementById('btn-error');
   const contentNormal = document.getElementById('content-normal');
   const contentError = document.getElementById('content-error');
-  const scanBtn = document.getElementById('scan-btn');
+  const totalCountSpan = document.getElementById('total-count');
 
   let isFirstLoad = true;
 
@@ -28,7 +28,17 @@ document.addEventListener('DOMContentLoaded', function() {
   function fetchAndDisplayData() {
     chrome.runtime.sendMessage({ action: "get_latest_data" }, (response) => {
       if (response) {
-        displayData(response.offline, response.error);
+        const normalList = response.normal || [];
+        const offlineList = response.offline || [];
+        const errorList = response.error || [];
+
+        // Tính tổng số thiết bị hiện hữu (Normal + Offline + Error)
+        const total = normalList.length + offlineList.length + errorList.length;
+        if (totalCountSpan) {
+          totalCountSpan.innerText = total;
+        }
+
+        displayData(offlineList, errorList);
       }
     });
   }
@@ -139,9 +149,6 @@ document.addEventListener('DOMContentLoaded', function() {
       isFirstLoad = false;
     }
   }
-
-  scanBtn.innerText = "🟢 Đang chạy nền tự động...";
-  scanBtn.style.backgroundColor = "#28a745";
 
   fetchAndDisplayData();
   setInterval(fetchAndDisplayData, 3000);
