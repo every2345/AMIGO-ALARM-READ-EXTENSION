@@ -29,7 +29,12 @@ function aggregateData() {
       delete frameData[frameId];
     }
   }
-  return { normal: combinedNormal, offline: combinedOffline, error: combinedError };
+  return {
+    normal: combinedNormal,
+    offline: combinedOffline,
+    error: combinedError,
+    total_devices: combinedNormal.length + combinedOffline.length + combinedError.length
+  };
 }
 
 // Gửi dữ liệu sang Python sử dụng IP động được cấu hình
@@ -44,7 +49,12 @@ setInterval(() => {
       fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ offline: finalData.offline, error: finalData.error })
+        body: JSON.stringify({
+          normal: finalData.normal,
+          offline: finalData.offline,
+          error: finalData.error,
+          total_devices: finalData.total_devices
+        })
       }).catch(err => console.log("Không kết nối được tới Python tại IP:", ip));
     });
   }
