@@ -15,30 +15,32 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 });
 
 function aggregateData() {
+  let combinedNormal = [];
   let combinedOffline = [];
   let combinedError = [];
   let now = Date.now();
   
   for (let frameId in frameData) {
     if (now - frameData[frameId].timestamp < 10000) {
+      combinedNormal.push(...(frameData[frameId].data.normal || []));
       combinedOffline.push(...(frameData[frameId].data.offline || []));
       combinedError.push(...(frameData[frameId].data.error || []));
     } else {
       delete frameData[frameId];
     }
   }
-  return { offline: combinedOffline, error: combinedError };
+  return { normal: combinedNormal, offline: combinedOffline, error: combinedError };
 }
 
 // Chạy ngầm gửi dữ liệu sang Python mỗi 3 giây
 setInterval(() => {
   let finalData = aggregateData();
   
-  if (finalData.offline.length > 0 || finalData.error.length > 0) {
+  if (finalData.offline.length > 0 || finalData.error.length > 0 || finalData.normal.length > 0) {
     fetch('http://localhost:5000/update', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(finalData)
+      body: JSON.stringify({ offline: finalData.offline, error: finalData.error })
     }).catch(err => console.log("Đợi Python bật lên:", err));
   }
 }, 3000);
